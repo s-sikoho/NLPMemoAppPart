@@ -1,4 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from sqlalchemy.orm import Session
+
+from database.database import SessionLocal
+
+from models.memo import Memo
+
 from schemas.memo import MemoCreate
 
 
@@ -8,23 +15,45 @@ router = APIRouter(
 )
 
 
-# メモ保存場所（仮）
-memos = []
+def get_db():
+
+    db = SessionLocal()
+
+    try:
+        yield db
+
+    finally:
+        db.close()
+
 
 
 @router.get("/")
-def get_memos():
-    return {
-        "memos": memos
-    }
+def get_memos(
+    db: Session = Depends(get_db)
+):
+
+    memos = db.query(Memo).all()
+
+    return memos
+
 
 
 @router.post("/")
-def create_memo(memo: MemoCreate):
+def create_memo(
+    memo: MemoCreate,
+    db: Session = Depends(get_db)
+):
 
-    memos.append(memo.text)
+    new_memo = Memo(
+        text=memo.text
+    )
 
-    return {
-        "message": "saved",
-        "text": memo.text
-    }
+
+    db.add(new_memo)
+
+    db.commit()
+
+    db.refresh(new_memo)
+
+
+    return new_memo
