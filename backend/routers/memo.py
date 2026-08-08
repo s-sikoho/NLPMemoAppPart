@@ -8,6 +8,7 @@ from models.memo import Memo
 
 from schemas.memo import MemoCreate
 
+from classifier.predict import predict_category
 
 router = APIRouter(
     prefix="/memo",
@@ -44,8 +45,13 @@ def create_memo(
     db: Session = Depends(get_db)
 ):
 
+    category = predict_category(
+        memo.text
+    )
+
     new_memo = Memo(
-        text=memo.text
+        text=memo.text,
+        category=category
     )
 
 

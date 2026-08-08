@@ -1,12 +1,10 @@
 from sqlalchemy import Column, Integer, String
-
 from database.database import Base
 
 
 class Memo(Base):
 
     __tablename__ = "memos"
-
 
     id = Column(
         Integer,
@@ -15,5 +13,9 @@ class Memo(Base):
     )
 
     text = Column(
+        String
+    )
+
+    category = Column(
         String
     )
