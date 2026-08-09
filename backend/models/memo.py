@@ -3,7 +3,6 @@ from database.database import Base
 
 
 class Memo(Base):
-
     __tablename__ = "memos"
 
     id = Column(
@@ -12,10 +11,17 @@ class Memo(Base):
         index=True
     )
 
-    text = Column(
-        String
+    title = Column(
+        String,
+        nullable=False
+    )
+
+    content = Column(
+        String,
+        nullable=False
     )
 
     category = Column(
-        String
+        String,
+        nullable=False
     )
