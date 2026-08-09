@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Memo App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Memo App</h1>
+
+    <div class="memo-form">
+
+        <input
+            id="memoTitle"
+            type="text"
+            placeholder="タイトル"
+        >
+
+        <textarea
+            id="memoContent"
+            placeholder="本文を入力してください">
+        </textarea>
+
+        <div>
+            <label for="categorySelect">
+                カテゴリ
+            </label>
+
+            <select id="categorySelect">
+            </select>
+
+            <button id="newCategoryButton">
+                新しいカテゴリ
+            </button>
+        </div>
+
+        <button id="predictButton">
+            自動分類
+        </button>
+
+        <button id="saveButton">
+            保存
+        </button>
+
+    </div>
+
+
+    <h2>メモ一覧</h2>
+
+    <ul id="memoList">
+    </ul>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
