@@ -1,5 +1,0 @@
-fastapi
-uvicorn
-sqlalchemy
-scikit-learn
-sentence-transformers
