@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from routers import memo, category
-from database.database import Base, engine
+from database.database import Base, engine,SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
-
+from models.category import Category
 
 Base.metadata.create_all(
     bind=engine
@@ -30,6 +30,40 @@ app.add_middleware(
 app.include_router(memo.router)
 app.include_router(category.router)
 
+def initialize_categories():
+
+    default_categories = [
+        "programming",
+        "life",
+        "university"
+    ]
+
+    db = SessionLocal()
+
+    try:
+        for name in default_categories:
+
+            existing = (
+                db.query(Category)
+                .filter(Category.name == name)
+                .first()
+            )
+
+            if existing is None:
+
+                category = Category(
+                    name=name
+                )
+
+                db.add(category)
+
+        db.commit()
+
+    finally:
+        db.close()
+
+
+initialize_categories()
 
 @app.get("/")
 def root():
