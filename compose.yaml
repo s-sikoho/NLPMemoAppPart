@@ -11,6 +11,7 @@ services:
 
     volumes:
       - ./backend:/app
+      - huggingface-cache:/root/.cache/huggingface
 
     command:
       uvicorn main:app --host 0.0.0.0 --reload
