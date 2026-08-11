@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import memo, category
+from routers import memo, category,classifier
 from database.database import Base, engine,SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
 from models.category import Category
@@ -29,6 +29,7 @@ app.add_middleware(
 
 app.include_router(memo.router)
 app.include_router(category.router)
+app.include_router(classifier.router)
 
 def initialize_categories():
 
