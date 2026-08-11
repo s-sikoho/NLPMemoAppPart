@@ -15,3 +15,6 @@ services:
 
     command:
       uvicorn main:app --host 0.0.0.0 --reload
+
+volumes:
+  huggingface-cache:
