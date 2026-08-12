@@ -34,7 +34,7 @@ app.include_router(classifier.router)
 def initialize_categories():
 
     default_categories = [
-        "programming",
+        "programing",
         "life",
         "university"
     ]
