@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from database.database import SessionLocal
 from models.memo import Memo
@@ -29,13 +30,24 @@ def get_db():
 @router.get("/")
 def get_memos(
     category: str | None = None,
+    keyword: str | None = None,
     db: Session = Depends(get_db)
 ):
     query = db.query(Memo)
 
-    if category is not None:
+    # カテゴリ絞り込み
+    if category:
         query = query.filter(
             Memo.category == category
+        )
+
+    # 文字列検索
+    if keyword:
+        query = query.filter(
+            or_(
+                Memo.title.contains(keyword),
+                Memo.content.contains(keyword)
+            )
         )
 
     return query.all()

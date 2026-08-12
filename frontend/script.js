@@ -44,6 +44,12 @@ document
         clearForm
     );
 
+document
+    .getElementById("searchButton")
+    .addEventListener(
+        "click",
+        loadMemos
+    );
 
 // -------------------------
 // Category
@@ -365,12 +371,34 @@ async function loadMemos() {
             .getElementById("filterCategory")
             .value;
 
+    const keyword =
+    document
+        .getElementById("searchKeyword")
+        .value.trim();
+
     let url =
         MEMO_API + "/";
 
+    const params =
+        new URLSearchParams();
+
     if (selectedCategory !== "") {
-        url +=
-            `?category=${encodeURIComponent(selectedCategory)}`;
+        params.append(
+            "category",
+            selectedCategory
+        );
+    }
+
+
+    if (keyword !== "") {
+        params.append(
+            "keyword",
+            keyword
+        );
+    }
+
+    if (params.toString() !== "") {
+        url += "?" + params.toString();
     }
 
     const response =
