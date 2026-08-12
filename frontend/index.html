@@ -13,45 +13,51 @@
 
     <div class="memo-form">
 
-        <input
-            id="memoTitle"
-            type="text"
-            placeholder="タイトル"
-        >
+        <input type="hidden" id="editingMemoId">
 
-        <textarea
-            id="memoContent"
-            placeholder="本文を入力してください">
-        </textarea>
+    <input
+        id="memoTitle"
+        type="text"
+        placeholder="タイトル"
+    >
 
-        <div>
-            <label for="categorySelect">
-                カテゴリ
-            </label>
+    <textarea
+        id="memoContent"
+        placeholder="本文を入力してください">
+    </textarea>
 
-            <select id="categorySelect">
-            </select>
+    <div>
+        <label for="categorySelect">
+            カテゴリ
+        </label>
 
-            <button id="newCategoryButton">
-                新しいカテゴリ
-            </button>
-        </div>
+        <select id="categorySelect"></select>
 
-        <button id="predictButton">
-            自動分類
+        <button id="newCategoryButton">
+            新しいカテゴリ
         </button>
-
-        <button id="saveButton">
-            保存
-        </button>
-
     </div>
 
+    <button id="predictButton">
+        自動分類
+    </button>
+
+    <button id="saveButton">
+        保存
+    </button>
+
+    <button id="cancelEditButton">
+        編集キャンセル
+    </button>
 
     <h2>メモ一覧</h2>
+    <select id="filterCategory">
+        <option value="">すべて</option>
+    </select>
 
-    <ul id="memoList">
-    </ul>
+    <ul id="memoList"></ul>
+
+    </div>
 
 
     <script src="script.js"></script>

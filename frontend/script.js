@@ -16,14 +16,12 @@ document
         predictCategory
     );
 
-
 document
     .getElementById("saveButton")
     .addEventListener(
         "click",
         saveMemo
     );
-
 
 document
     .getElementById("newCategoryButton")
@@ -32,8 +30,23 @@ document
         createCategory
     );
 
+document
+    .getElementById("filterCategory")
+    .addEventListener(
+        "change",
+        loadMemos
+    );
+
+document
+    .getElementById("cancelEditButton")
+    .addEventListener(
+        "click",
+        clearForm
+    );
+
 
 // -------------------------
+// Category
 // カテゴリ一覧取得
 // -------------------------
 
@@ -50,17 +63,34 @@ async function loadCategories(
         await response.json();
 
 
-    const select =
+    // -------------------------
+    // メモ保存用select
+    // -------------------------
+
+    const categorySelect =
         document.getElementById(
             "categorySelect"
         );
 
+    categorySelect.innerHTML = "";
 
-    select.innerHTML = "";
+
+    // -------------------------
+    // 絞り込み用select
+    // -------------------------
+
+    const filterSelect =
+        document.getElementById(
+            "filterCategory"
+        );
+
+    filterSelect.innerHTML =
+        '<option value="">すべて</option>';
 
 
     for (const category of categories) {
 
+        // 保存用
         const option =
             document.createElement(
                 "option"
@@ -81,12 +111,93 @@ async function loadCategories(
         }
 
 
-        select.appendChild(option);
+        categorySelect.appendChild(
+            option
+        );
+
+
+        // 絞り込み用
+        const filterOption =
+            document.createElement(
+                "option"
+            );
+
+        filterOption.value =
+            category.name;
+
+        filterOption.textContent =
+            category.name;
+
+
+        filterSelect.appendChild(
+            filterOption
+        );
     }
+}
+
+// -------------------------
+// Category
+// 新しいカテゴリ作成
+// -------------------------
+
+async function createCategory() {
+
+    const name =
+        prompt(
+            "新しいカテゴリ名を入力してください"
+        );
+
+    if (name === null) {
+        return;
+    }
+
+    const trimmedName =
+        name.trim();
+
+    if (trimmedName === "") {
+        return;
+    }
+
+
+    const response =
+        await fetch(
+            CATEGORY_API + "/",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    name: trimmedName
+                })
+            }
+        );
+
+
+    if (!response.ok) {
+
+        const error =
+            await response.json();
+
+        alert(error.detail);
+
+        return;
+    }
+
+
+    // カテゴリ一覧を再取得し、
+    // 新しく作ったカテゴリを選択
+    await loadCategories(
+        trimmedName
+    );
 }
 
 
 // -------------------------
+// Predict
 // 自動分類
 // -------------------------
 
@@ -131,11 +242,16 @@ async function predictCategory() {
         );
 
 
+    if (!response.ok) {
+        alert("分類に失敗しました");
+        return;
+    }
+
+
     const result =
         await response.json();
 
 
-    // 予測結果を選択状態にする
     await loadCategories(
         result.category
     );
@@ -143,7 +259,8 @@ async function predictCategory() {
 
 
 // -------------------------
-// メモ保存
+// Create / Update
+// 保存
 // -------------------------
 
 async function saveMemo() {
@@ -163,75 +280,29 @@ async function saveMemo() {
             .getElementById("categorySelect")
             .value;
 
+    const editingMemoId =
+        document
+            .getElementById("editingMemoId")
+            .value;
 
-    if (title.trim() === "") {
+
+    if (
+        title.trim() === ""
+        ||
+        content.trim() === ""
+    ) {
         return;
     }
 
 
-    if (content.trim() === "") {
-        return;
-    }
+    // -------------------------
+    // 新規作成
+    // -------------------------
 
+    if (editingMemoId === "") {
 
-    await fetch(
-        MEMO_API + "/",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type":
-                    "application/json"
-            },
-
-            body: JSON.stringify({
-                title: title,
-                content: content,
-                category: category
-            })
-        }
-    );
-
-
-    // 入力欄を空にする
-    document
-        .getElementById("memoTitle")
-        .value = "";
-
-    document
-        .getElementById("memoContent")
-        .value = "";
-
-
-    await loadMemos();
-}
-
-
-// -------------------------
-// 新しいカテゴリ作成
-// -------------------------
-
-async function createCategory() {
-
-    const name =
-        prompt(
-            "新しいカテゴリ名を入力してください"
-        );
-
-
-    if (name === null) {
-        return;
-    }
-
-
-    if (name.trim() === "") {
-        return;
-    }
-
-
-    const response =
         await fetch(
-            CATEGORY_API + "/",
+            MEMO_API + "/",
             {
                 method: "POST",
 
@@ -241,92 +312,142 @@ async function createCategory() {
                 },
 
                 body: JSON.stringify({
-                    name: name
+                    title: title,
+                    content: content,
+                    category: category
                 })
             }
         );
 
+    }
 
-    if (!response.ok) {
+    // -------------------------
+    // 編集
+    // -------------------------
 
-        const error =
-            await response.json();
+    else {
 
-        alert(error.detail);
+        await fetch(
+            `${MEMO_API}/${editingMemoId}`,
+            {
+                method: "PUT",
 
-        return;
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    title: title,
+                    content: content,
+                    category: category
+                })
+            }
+        );
     }
 
 
-    // 作成したカテゴリを
-    // そのまま選択状態にする
-    await loadCategories(name);
+    clearForm();
+
+    await loadMemos();
 }
 
 
 // -------------------------
-// メモ一覧取得
+// Read
+// メモ一覧
 // -------------------------
 
 async function loadMemos() {
 
-    const response =
-        await fetch(
-            MEMO_API + "/"
-        );
+    const selectedCategory =
+        document
+            .getElementById("filterCategory")
+            .value;
 
+    let url =
+        MEMO_API + "/";
+
+    if (selectedCategory !== "") {
+        url +=
+            `?category=${encodeURIComponent(selectedCategory)}`;
+    }
+
+    const response =
+        await fetch(url);
 
     const memos =
         await response.json();
-
 
     const list =
         document.getElementById(
             "memoList"
         );
 
-
     list.innerHTML = "";
 
-
     for (const memo of memos) {
-
         const li =
-            document.createElement(
-                "li"
-            );
+            document.createElement("li");
 
-
+        // タイトル
         const title =
-            document.createElement(
-                "h3"
-            );
+            document.createElement("h3");
 
         title.textContent =
             memo.title;
 
-
+        // 本文
         const content =
-            document.createElement(
-                "p"
-            );
+            document.createElement("p");
 
         content.textContent =
             memo.content;
 
-
+        // カテゴリ
         const category =
-            document.createElement(
-                "span"
-            );
+            document.createElement("p");
 
         category.textContent =
             `カテゴリ: ${memo.category}`;
 
+        // 編集
+        const editButton =
+            document.createElement(
+                "button"
+            );
+
+        editButton.textContent =
+            "編集";
+
+        editButton.addEventListener(
+            "click",
+            function () {
+                startEdit(memo);
+            }
+        );
+
+        // 削除
+        const deleteButton =
+            document.createElement(
+                "button"
+            );
+
+        deleteButton.textContent =
+            "削除";
+
+        deleteButton.addEventListener(
+            "click",
+            function () {
+                deleteMemo(memo.id);
+            }
+        );
 
         li.appendChild(title);
         li.appendChild(content);
         li.appendChild(category);
+        li.appendChild(editButton);
+        li.appendChild(deleteButton);
 
         list.appendChild(li);
     }
@@ -334,7 +455,96 @@ async function loadMemos() {
 
 
 // -------------------------
-// 初期読み込み
+// Update
+// 編集開始
+// -------------------------
+
+async function startEdit(memo) {
+
+    document
+        .getElementById("editingMemoId")
+        .value = memo.id;
+
+    document
+        .getElementById("memoTitle")
+        .value = memo.title;
+
+    document
+        .getElementById("memoContent")
+        .value = memo.content;
+
+
+    await loadCategories(
+        memo.category
+    );
+
+
+    document
+        .getElementById("saveButton")
+        .textContent = "更新";
+}
+
+
+// -------------------------
+// Delete
+// -------------------------
+
+async function deleteMemo(id) {
+
+    const result =
+        confirm(
+            "このメモを削除しますか？"
+        );
+
+    if (!result) {
+        return;
+    }
+
+
+    await fetch(
+        `${MEMO_API}/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+
+    await loadMemos();
+}
+
+
+// -------------------------
+// フォーム初期化
+// -------------------------
+
+async function clearForm() {
+
+    document
+        .getElementById("editingMemoId")
+        .value = "";
+
+    document
+        .getElementById("memoTitle")
+        .value = "";
+
+    document
+        .getElementById("memoContent")
+        .value = "";
+
+    document
+        .getElementById("saveButton")
+        .textContent = "保存";
+
+
+    await loadCategories();
+}
+
+// -------------------------
+// フィルター
+// -------------------------
+
+// -------------------------
+// 初期化
 // -------------------------
 
 async function initialize() {

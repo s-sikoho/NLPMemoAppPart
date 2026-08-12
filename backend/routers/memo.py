@@ -6,7 +6,6 @@ from models.memo import Memo
 from schemas.memo import MemoCreate, MemoUpdate, MemoSave
 from classifier.predict import predict_category
 
-
 router = APIRouter(
     prefix="/memo",
     tags=["memo"]
@@ -29,12 +28,17 @@ def get_db():
 # -------------------------
 @router.get("/")
 def get_memos(
+    category: str | None = None,
     db: Session = Depends(get_db)
 ):
+    query = db.query(Memo)
 
-    memos = db.query(Memo).all()
+    if category is not None:
+        query = query.filter(
+            Memo.category == category
+        )
 
-    return memos
+    return query.all()
 
 # -------------------------
 # Predict
@@ -106,7 +110,8 @@ def update_memo(
     )
 
     target_memo.text = memo.text
-    target_memo.category = category
+    target_memo.content = memo.content
+    target_memo.category = memo.category
 
     db.commit()
     db.refresh(target_memo)
