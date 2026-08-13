@@ -51,6 +51,13 @@ document
         loadMemos
     );
 
+document
+    .getElementById("trainButton")
+    .addEventListener(
+        "click",
+        trainClassifier
+    );
+
 // -------------------------
 // Category
 // カテゴリ一覧取得
@@ -59,7 +66,6 @@ document
 async function loadCategories(
     selectedCategory = null
 ) {
-
     const response =
         await fetch(
             CATEGORY_API + "/"
@@ -67,7 +73,6 @@ async function loadCategories(
 
     const categories =
         await response.json();
-
 
     // -------------------------
     // メモ保存用select
@@ -79,7 +84,6 @@ async function loadCategories(
         );
 
     categorySelect.innerHTML = "";
-
 
     // -------------------------
     // 絞り込み用select
@@ -108,7 +112,6 @@ async function loadCategories(
         option.textContent =
             category.name;
 
-
         if (
             category.name
             === selectedCategory
@@ -116,11 +119,9 @@ async function loadCategories(
             option.selected = true;
         }
 
-
         categorySelect.appendChild(
             option
         );
-
 
         // 絞り込み用
         const filterOption =
@@ -133,7 +134,6 @@ async function loadCategories(
 
         filterOption.textContent =
             category.name;
-
 
         filterSelect.appendChild(
             filterOption
@@ -163,7 +163,6 @@ async function createCategory() {
     if (trimmedName === "") {
         return;
     }
-
 
     const response =
         await fetch(
@@ -501,11 +500,9 @@ async function startEdit(memo) {
         .getElementById("memoContent")
         .value = memo.content;
 
-
     await loadCategories(
         memo.category
     );
-
 
     document
         .getElementById("saveButton")
@@ -528,7 +525,6 @@ async function deleteMemo(id) {
         return;
     }
 
-
     await fetch(
         `${MEMO_API}/${id}`,
         {
@@ -536,8 +532,35 @@ async function deleteMemo(id) {
         }
     );
 
-
     await loadMemos();
+}
+
+async function trainClassifier() {
+
+    const response =
+        await fetch(
+            "http://localhost:8000/classifier/train",
+            {
+                method: "POST"
+            }
+        );
+
+    const result =
+        await response.json();
+
+    const message =
+        document.getElementById(
+            "trainResult"
+        );
+
+    if (response.ok) {
+        message.textContent =
+            `再学習完了: ${result.training_samples}件`;
+        console.log(result);
+    } else {
+        message.textContent =
+            `エラー: ${result.detail}`;
+    }
 }
 
 
