@@ -35,6 +35,16 @@ def predict_category(text):
         normalize_embeddings=True
     )
 
-    result = classifier.predict(X)
+    probabilities = classifier.predict_proba(X)[0]
 
-    return result[0]
+    max_index = probabilities.argmax()
+
+    category = classifier.classes_[max_index]
+
+    confidence = probabilities[max_index]
+
+
+    return {
+        "category": category,
+        "confidence": float(confidence)
+    }

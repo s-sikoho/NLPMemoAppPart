@@ -65,12 +65,13 @@ def predict_memo_category(
         f"{memo.title} {memo.content}"
     )
 
-    category = predict_category(
+    result = predict_category(
         classification_text
     )
 
     return {
-        "category": category
+        "category": result["category"],
+        "confidence": result["confidence"]
     }
 # -------------------------
 # Create
@@ -116,10 +117,6 @@ def update_memo(
             status_code=404,
             detail="Memo not found"
         )
-
-    category = predict_category(
-        memo.text
-    )
 
     target_memo.text = memo.text
     target_memo.content = memo.content
