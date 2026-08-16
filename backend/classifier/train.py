@@ -55,7 +55,8 @@ def train_classifier(db):
 
 
     classifier = LogisticRegression(
-        max_iter=1000
+        max_iter=1000,
+        class_weight="balanced"
     )
 
     classifier.fit(

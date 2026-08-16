@@ -24,29 +24,17 @@ import { CreateCategoryDialog } from "@/components/category/CreateCategoryDialog
 
 type Props = {
   title: string;
-
   content: string;
-
   categories: Category[];
-
   selectedCategory: string;
-
   editingMemoId: number | null;
-
   confidence?: number | null;
-
   onTitleChange: (value: string) => void;
-
   onContentChange: (value: string) => void;
-
   onCategoryChange: (value: string) => void;
-
   onCreateCategory: (name: string) => Promise<void>;
-
   onPredict: () => Promise<void>;
-
   onSave: () => Promise<void>;
-
   onCancel: () => void;
 };
 

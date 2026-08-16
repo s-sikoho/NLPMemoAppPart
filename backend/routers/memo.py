@@ -118,7 +118,7 @@ def update_memo(
             detail="Memo not found"
         )
 
-    target_memo.text = memo.text
+    target_memo.title = memo.title
     target_memo.content = memo.content
     target_memo.category = memo.category
 
