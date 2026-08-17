@@ -8,6 +8,7 @@ export type Memo = {
 export type Category = {
   id: number
   name: string
+  is_system: boolean
 }
 
 export type MemoInput = {

@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String
-
+from sqlalchemy import Column, Integer, String, Boolean
 from database.database import Base
 
 
@@ -17,4 +16,9 @@ class Category(Base):
         String,
         unique=True,
         nullable=False
+    )
+
+    is_system = Column(
+        Boolean,
+        default=False
     )

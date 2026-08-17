@@ -12,7 +12,6 @@ router = APIRouter(
     tags=["memo"]
 )
 
-
 def get_db():
     db = SessionLocal()
 

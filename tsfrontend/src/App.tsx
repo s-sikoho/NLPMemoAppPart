@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { Category, Memo } from "@/types";
-
+import { trainClassifier } from "./api/classifier";
 import {
   createMemo,
   deleteMemo,
@@ -15,6 +15,7 @@ import { MemoForm } from "@/components/memo/MemoForm";
 import { MemoFilter } from "@/components/memo/MemoFilter";
 import { MemoList } from "@/components/memo/MemoList";
 import { TrainButton } from "@/components/classifier/TrainButton";
+import { CategoryManager } from "./components/category/CategoryManager";
 
 function App() {
   // -------------------------
@@ -229,6 +230,23 @@ function App() {
       setSelectedCategory(categories[0].name);
     }
   }
+  // -------------------------
+  // Category Deleted
+  // -------------------------
+  async function handleCategoryDeleted() {
+    await loadCategories();
+    await loadMemos();
+    await handleTrain();
+  }
+  // -------------------------
+  // Train Manager
+  // -------------------------
+  async function handleTrain() {
+    const result = await trainClassifier();
+    toast.success(
+    ` 再学習完了: ${result.training_samples}件`
+    );
+  }
 
   return (
     <main
@@ -278,7 +296,7 @@ function App() {
             </p>
           </div>
 
-          <TrainButton />
+          <TrainButton OnTrain={handleTrain}/>
         </header>
 
         <MemoForm
@@ -296,6 +314,7 @@ function App() {
           onSave={handleSave}
           onCancel={clearForm}
         />
+        <CategoryManager categories={categories} onDeleted={handleCategoryDeleted} />
 
         <section className="space-y-5">
           <div>
