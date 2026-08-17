@@ -131,6 +131,13 @@ function App() {
       return;
     }
 
+    const exists =categories.some((category) =>category.name === selectedCategory);
+
+    if (!exists) {
+      toast.error("そのカテゴリは存在しません");
+      return;
+    }
+
     const memo = {
       title,
       content,
@@ -236,7 +243,6 @@ function App() {
   async function handleCategoryDeleted() {
     await loadCategories();
     await loadMemos();
-    await handleTrain();
   }
   // -------------------------
   // Train Manager
