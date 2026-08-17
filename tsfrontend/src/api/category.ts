@@ -33,3 +33,15 @@ export async function createCategory(name: string): Promise<Category> {
 
   return result;
 }
+
+export async function deleteCategory(id: number): Promise<void> {
+  const response = await fetch(`${CATEGORY_API}/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const result = await response.json();
+
+    throw new Error(result.detail ?? "カテゴリ削除に失敗しました");
+  }
+}
