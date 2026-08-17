@@ -5,6 +5,7 @@ from database.database import SessionLocal
 from models.category import Category
 from schemas.category import CategoryCreate
 from models.memo import Memo
+from models.trainingmemo import TrainingMemo
 
 
 router = APIRouter(
@@ -98,7 +99,7 @@ def delete_category(
     other = (
         db.query(Category)
         .filter(
-            Category.is_system
+            Category.name == "その他"
         )
         .first()
     )
@@ -118,6 +119,12 @@ def delete_category(
         },
         synchronize_session=False
     )
+
+    db.query(TrainingMemo)\
+        .filter(
+            TrainingMemo.category == category.name
+        )\
+        .delete()
 
     # カテゴリ削除
     db.delete(category)
