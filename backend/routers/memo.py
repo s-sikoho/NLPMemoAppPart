@@ -6,6 +6,7 @@ from database.database import SessionLocal
 from models.memo import Memo
 from schemas.memo import MemoCreate, MemoUpdate, MemoSave
 from classifier.predict import predict_category
+from models.category import Category
 
 router = APIRouter(
     prefix="/memo",
@@ -87,6 +88,16 @@ def create_memo(
         content=memo.content,
         category=memo.category
     )
+    category_chech = (
+        db.query(Category)
+        .filter(Category.name == memo.category)
+        .first()
+    )
+    if category_chech is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Category not found"
+        )
 
     db.add(new_memo)
     db.commit()
@@ -120,6 +131,17 @@ def update_memo(
     target_memo.title = memo.title
     target_memo.content = memo.content
     target_memo.category = memo.category
+
+    category_chech = (
+            db.query(Category)
+            .filter(Category.name == memo.category)
+            .first()
+        )
+    if category_chech is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Category not found"
+        )
 
     db.commit()
     db.refresh(target_memo)
